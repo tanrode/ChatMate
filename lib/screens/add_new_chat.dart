@@ -127,17 +127,22 @@ class _AddNewChatState extends State<AddNewChat> {
                         if(userEmails.contains(_userEmail)){
                           print('true');
                           int ind=userEmails.indexOf(_userEmail);
+                          int ownerInd=usernames.indexOf(username);
                           final user = await FirebaseAuth.instance.currentUser();
+                          print(_userEmail+' '+userEmails[ind]);
                           Firestore.instance.collection('chats').add({
-                            'ownUser' : _userEmail,
-                            'otherUser': userEmails[ind],
+                            'ownUser' : userEmails[ownerInd],
+                            'otherUser': _userEmail,
                             'chatNameOwner':  username,
                             'chatNameOther': usernames[ind],
                           });
                           print(ind);
+                          _showSuccessDialog();
                         }
-                        else
+                        else{
                           print('false');
+                          _showFailureDialog();
+                        }
                     }),
                     SizedBox(
                       height: 6,

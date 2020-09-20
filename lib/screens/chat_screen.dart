@@ -3,9 +3,18 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-class ChatScreen extends StatelessWidget {
-  ChatScreen(this.docId);
+class ChatScreen extends StatefulWidget {
+  ChatScreen(this.docId,this.chatOtherPerson,this.chatOwner,this.currUser);
   final String docId;
+  final String chatOtherPerson;
+  final String chatOwner;
+  final String currUser;
+
+  @override
+  _ChatScreenState createState() => _ChatScreenState();
+}
+
+class _ChatScreenState extends State<ChatScreen> {
   String msg = '';
   final control = TextEditingController();
 
@@ -49,7 +58,7 @@ class ChatScreen extends StatelessWidget {
       backgroundColor: Colors.green[100],
       appBar: AppBar(
         title: Text(
-          "ChatMate",
+          widget.currUser==widget.chatOwner ? widget.chatOtherPerson : widget.chatOwner,
           style: TextStyle(
               color: Colors.green, fontSize: 28, fontWeight: FontWeight.w800),
         ),
@@ -66,7 +75,7 @@ class ChatScreen extends StatelessWidget {
                     return Center(child: CircularProgressIndicator());
                   return StreamBuilder(
                       stream: Firestore.instance
-                          .collection('/chats/$docId/messages')
+                          .collection('/chats/${widget.docId}/messages')
                           .orderBy('timeStamp', descending: true)
                           .snapshots(),
                       builder: (ctx, snapshot) {
@@ -128,7 +137,7 @@ class ChatScreen extends StatelessWidget {
                       if (msg != '') {
                         final user = await FirebaseAuth.instance.currentUser();
                         Firestore.instance
-                            .collection('/chats/$docId/messages')
+                            .collection('/chats/${widget.docId}/messages')
                             .add({
                           'text': msg,
                           'timeStamp': Timestamp.now(),

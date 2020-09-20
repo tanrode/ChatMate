@@ -5,12 +5,15 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class ChatHomeScreen extends StatefulWidget {
+  ChatHomeScreen(this.userId,this.username);
+  final String userId;
+  final String username;
   @override
   _ChatHomeScreenState createState() => _ChatHomeScreenState();
 }
 
 class _ChatHomeScreenState extends State<ChatHomeScreen> {
-
+  
   void initState()
   {
     super.initState();
@@ -92,14 +95,26 @@ class _ChatHomeScreenState extends State<ChatHomeScreen> {
             child: StreamBuilder(
                 stream: Firestore.instance.collection('/chats').snapshots(),
                 builder: (ctx, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.waiting) {
-                    return Center(child: CircularProgressIndicator());
+                  print('username:'+widget.username);
+                  //print(widget.owner);
+                  //print(widget.other);
+                  if(snapshot.connectionState == ConnectionState.waiting)
+                  {
+                    return CircularProgressIndicator();
                   }
-                  final documents = snapshot.data.documents;
+                  final documents= snapshot.data.documents;
                   return ListView.builder(
                       itemCount: documents.length,
                       itemBuilder: (ctx, ind) {
-                        return GestureDetector(
+                        //print('username: '+widget.username);
+                        //print('owner: '+documents[ind]['chatNameOwner']);
+                        //print('other: '+documents[ind]['chatNameOther']);
+                        //print('owner: '+widget.owner[ind].toString());
+                        //print('other: '+widget.other[ind].toString());
+                        //print(widget.username==widget.owner[ind].toString() || widget.username==widget.other[ind].toString());
+                        if(widget.username==documents[ind]['chatNameOwner'].toString() || widget.username==documents[ind]['chatNameOther'].toString())
+                        {
+                          return GestureDetector(
                             child: Column(
                               children: <Widget>[
                                 SizedBox(
@@ -111,18 +126,48 @@ class _ChatHomeScreenState extends State<ChatHomeScreen> {
                                   height: 40,
                                   child: Card(
                                     color: Colors.blue,
-                                    child: Text(documents[ind]['chatNameOther'],style: TextStyle(fontSize: 25),textAlign: TextAlign.center,),
+                                    child: Text(widget.username==documents[ind]['chatNameOwner'] ? documents[ind]['chatNameOther'] : documents[ind]['chatNameOwner'],style: TextStyle(fontSize: 25),textAlign: TextAlign.center,),
                                   ),
                                 ),
                               ],
                             ),
-                            onTap: () {
+                            onTap: (){
                               print('tapped');
                               Navigator.of(context)
                                   .push(MaterialPageRoute(builder: (ctx) {
-                                return ChatScreen(documents[ind].documentID);
+                                return ChatScreen(documents[ind].documentID,documents[ind]['chatNameOther'],documents[ind]['chatNameOwner'],widget.username);
                               }));
                             });
+                        }
+                        else
+                        {
+                          return SizedBox(height: 0);
+                        }
+                       /* return (username==own.toString() || username==other.toString()) ?
+                        GestureDetector(
+                            child: Column(
+                              children: <Widget>[
+                                SizedBox(
+                                  height: 7,
+                                ),
+                                Container(
+                                  color: Colors.green,
+                                  width: MediaQuery.of(context).size.width*0.7,
+                                  height: 40,
+                                  child: Card(
+                                    color: Colors.blue,
+                                    child: Text(username==documents[ind]['chatNameOwner'] ? documents[ind]['chatNameOther'] : documents[ind]['chatNameOwner'],style: TextStyle(fontSize: 25),textAlign: TextAlign.center,),
+                                  ),
+                                ),
+                              ],
+                            ),
+                            onTap: (){
+                              print('tapped');
+                              Navigator.of(context)
+                                  .push(MaterialPageRoute(builder: (ctx) {
+                                return ChatScreen(documents[ind].documentID,documents[ind]['chatNameOther'],documents[ind]['chatNameOwner'],username);
+                              }));
+                            }): SizedBox(height: 0);*/
                       });
                 }),
           ),
