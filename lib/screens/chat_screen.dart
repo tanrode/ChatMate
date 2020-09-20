@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class ChatScreen extends StatelessWidget {
+  ChatScreen(this.docId);
+  final String docId;
   String msg = '';
   final control = TextEditingController();
 
@@ -53,30 +55,6 @@ class ChatScreen extends StatelessWidget {
         ),
         centerTitle: true,
         backgroundColor: Colors.black87,
-        actions: <Widget>[
-          DropdownButton(
-              icon: Icon(Icons.more_vert),
-              items: [
-                DropdownMenuItem(
-                  child: Container(
-                    child: Row(
-                      children: <Widget>[
-                        Icon(Icons.exit_to_app),
-                        SizedBox(width: 8),
-                        Text(
-                          'Logout',
-                          style: TextStyle(fontWeight: FontWeight.bold),
-                        ),
-                      ],
-                    ),
-                  ),
-                  value: 'logout',
-                ),
-              ],
-              onChanged: (itemValue) {
-                if (itemValue == 'logout') _showMyDialog();
-              }),
-        ],
       ),
       body: Column(
         children: <Widget>[
@@ -88,7 +66,7 @@ class ChatScreen extends StatelessWidget {
                     return Center(child: CircularProgressIndicator());
                   return StreamBuilder(
                       stream: Firestore.instance
-                          .collection('/chats/zEsZzMCDpXnO8YJyc0RR/messages')
+                          .collection('/chats/$docId/messages')
                           .orderBy('timeStamp', descending: true)
                           .snapshots(),
                       builder: (ctx, snapshot) {
@@ -150,12 +128,13 @@ class ChatScreen extends StatelessWidget {
                       if (msg != '') {
                         final user = await FirebaseAuth.instance.currentUser();
                         Firestore.instance
-                            .collection('/chats/zEsZzMCDpXnO8YJyc0RR/messages')
+                            .collection('/chats/$docId/messages')
                             .add({
                           'text': msg,
                           'timeStamp': Timestamp.now(),
                           'userId': user.uid,
                         });
+                        //print(user.uid);
                         control.clear();
                       }
                     }),

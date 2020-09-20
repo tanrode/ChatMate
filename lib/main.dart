@@ -1,3 +1,4 @@
+import 'package:chatMate/screens/chat_home_screen.dart';
 import 'package:flutter/material.dart';
 import './screens/chat_screen.dart';
 import './screens/auth_screen.dart';
@@ -29,7 +30,7 @@ class MyApp extends StatelessWidget {
           backgroundColor: Colors.green[200],
           body: StreamBuilder(stream: FirebaseAuth.instance.onAuthStateChanged, builder: (ctx, snapshot) {
             if(snapshot.hasData)
-              return ChatScreen();
+              return ChatHomeScreen();
             return AuthScreen();
           })),
       debugShowCheckedModeBanner: false,
