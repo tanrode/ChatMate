@@ -5,17 +5,47 @@ import 'package:flutter/material.dart';
 import './screens/chat_screen.dart';
 import './screens/auth_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-void main() {
-  runApp(MyApp());
+import 'package:splashscreen/splashscreen.dart';
+
+void main(){
+  runApp(new MaterialApp(
+    home: new MyApp(),
+    debugShowCheckedModeBanner: false,
+  ));
 }
 
+
 class MyApp extends StatefulWidget {
-  // This widget is the root of your application.
   @override
-  _MyAppState createState() => _MyAppState();
+  _MyAppState createState() => new _MyAppState();
 }
 
 class _MyAppState extends State<MyApp> {
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: new SplashScreen(
+        seconds: 4,
+        navigateAfterSeconds: new HomeScreen(),
+        image: new Image.asset('images/ChatMate_splash_screen.png'),
+        gradientBackground: new LinearGradient(colors: [Colors.green[200], Colors.green], begin: Alignment.topLeft, end: Alignment.bottomRight),
+        backgroundColor: Colors.white,
+        styleTextUnderTheLoader: new TextStyle(),
+        photoSize: MediaQuery.of(context).size.width*0.4,
+        //onClick: ()=>print("Flutter Egypt"),
+        loaderColor: Colors.black,
+      ),
+    );
+  }
+}
+
+class HomeScreen extends StatefulWidget {
+  // This widget is the root of your application.
+  @override
+  _HomeScreenState createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
   String username;
   void initState()
   {
