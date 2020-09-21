@@ -100,7 +100,8 @@ class _ChatScreenState extends State<ChatScreen> {
                                       child: Message(
                                           documents[ind]['text'],
                                           documents[ind]['userId'] ==
-                                              futureSnaphot.data.uid),
+                                              futureSnaphot.data.uid,
+                                          documents[ind]['timeStamp']),
                                     );
                                   });
                             });

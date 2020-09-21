@@ -38,7 +38,7 @@ class _AuthScreenState extends State<AuthScreen> {
         _isLoading=false;
       });
       //To show snackbar to the user
-      Scaffold.of(ctx).showSnackBar(SnackBar(content: Text(err.message+''),backgroundColor: Colors.red,));
+      Scaffold.of(ctx).showSnackBar(SnackBar(content: Text(msg+''),backgroundColor: Colors.red,));
     }
     catch(err)
     {
