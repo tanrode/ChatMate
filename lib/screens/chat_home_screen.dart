@@ -36,12 +36,67 @@ class _ChatHomeScreenState extends State<ChatHomeScreen> {
             ),
             actions: <Widget>[
               RaisedButton(
+                  color: Colors.black87,
+                  shape: RoundedRectangleBorder(
+                      side: BorderSide(color: Colors.green),
+                      borderRadius: BorderRadius.circular(15)),
                   child: Text('Yes'),
                   onPressed: () {
                     FirebaseAuth.instance.signOut();
                     Navigator.of(context).pop();
                   }),
               RaisedButton(
+                color: Colors.black87,
+                shape: RoundedRectangleBorder(
+                    side: BorderSide(color: Colors.green),
+                    borderRadius: BorderRadius.circular(15)),
+                child: Text('No'),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                  FocusScope.of(context).unfocus();
+                },
+              ),
+            ],
+          );
+        },
+      );
+    }
+
+    Future<void> _confirmDeleteDialog(String id) async {
+      return showDialog<void>(
+        context: context,
+        barrierDismissible: false, // user must tap button!
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text('Confirmation'),
+            content: SingleChildScrollView(
+              child: ListBody(
+                children: <Widget>[
+                  Text('Do you want to Delete this chat? This is permanant and cannot be undone.'),
+                ],
+              ),
+            ),
+            actions: <Widget>[
+              RaisedButton(
+                  color: Colors.black87,
+                  shape: RoundedRectangleBorder(
+                      side: BorderSide(color: Colors.green),
+                      borderRadius: BorderRadius.circular(15)),
+                  child: Text('Yes'),
+                  onPressed: ()async{
+                    Firestore.instance.collection('/chats').getDocuments().then((snapshot){
+                      for (DocumentSnapshot ds in snapshot.documents){
+                        if(ds.documentID==id) 
+                          ds.reference.delete();
+                      }
+                    });
+                    Navigator.of(context).pop();
+                  }),
+              RaisedButton(
+                color: Colors.black87,
+                shape: RoundedRectangleBorder(
+                    side: BorderSide(color: Colors.green),
+                    borderRadius: BorderRadius.circular(15)),
                 child: Text('No'),
                 onPressed: () {
                   Navigator.of(context).pop();
@@ -121,7 +176,7 @@ class _ChatHomeScreenState extends State<ChatHomeScreen> {
                                   height: 7,
                                 ),
                                 Container(
-                                  color: Colors.green,
+                                  decoration: BoxDecoration(borderRadius: BorderRadius.circular(8),color: Colors.green),
                                   width: MediaQuery.of(context).size.width*0.7,
                                   height: 40,
                                   child: Card(
@@ -137,7 +192,11 @@ class _ChatHomeScreenState extends State<ChatHomeScreen> {
                                   .push(MaterialPageRoute(builder: (ctx) {
                                 return ChatScreen(documents[ind].documentID,documents[ind]['chatNameOther'],documents[ind]['chatNameOwner'],widget.username);
                               }));
-                            });
+                            },
+                            onLongPress: (){
+                              _confirmDeleteDialog(documents[ind].documentID);
+                            },
+                            );
                         }
                         else
                         {

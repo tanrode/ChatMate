@@ -50,6 +50,10 @@ class _AddNewChatState extends State<AddNewChat> {
             ),
             actions: <Widget>[
               RaisedButton(
+                  color: Colors.black87,
+                  shape: RoundedRectangleBorder(
+                      side: BorderSide(color: Colors.green),
+                      borderRadius: BorderRadius.circular(15)),
                   child: Text('Done'),
                   onPressed: () {
                     Navigator.of(context).pop();
@@ -77,6 +81,10 @@ class _AddNewChatState extends State<AddNewChat> {
             ),
             actions: <Widget>[
               RaisedButton(
+                  color: Colors.black87,
+                  shape: RoundedRectangleBorder(
+                      side: BorderSide(color: Colors.green),
+                      borderRadius: BorderRadius.circular(15)),
                   child: Text('Close'),
                   onPressed: () {
                     Navigator.of(context).pop();
@@ -100,57 +108,68 @@ class _AddNewChatState extends State<AddNewChat> {
         backgroundColor: Colors.black87,
       ),
       body: Center(
-      child: Card(
-        margin: EdgeInsets.all(5),
-        child: SingleChildScrollView(
-            padding: EdgeInsets.all(10),
-            child: Form(
-                key: _formKey,
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    TextFormField(
-                      key: Key('email'),
-                      keyboardType: TextInputType.emailAddress,
-                      decoration: InputDecoration(labelText: 'Enter User\'s Email address'),
-                      onChanged: (value) {
-                        _userEmail = value;
-                      },
-                    ),
-                    SizedBox(
-                      height: 15,
-                    ),
-                    RaisedButton(
-                        child: Text('Create',
-                            style: TextStyle(color: Colors.white)),
-                        onPressed: ()async {
-                        if(userEmails.contains(_userEmail)){
-                          print('true');
-                          int ind=userEmails.indexOf(_userEmail);
-                          int ownerInd=usernames.indexOf(username);
-                          final user = await FirebaseAuth.instance.currentUser();
-                          print(_userEmail+' '+userEmails[ind]);
-                          Firestore.instance.collection('chats').add({
-                            'ownUser' : userEmails[ownerInd],
-                            'otherUser': _userEmail,
-                            'chatNameOwner':  username,
-                            'chatNameOther': usernames[ind],
-                          });
-                          print(ind);
-                          _showSuccessDialog();
-                        }
-                        else{
-                          print('false');
-                          _showFailureDialog();
-                        }
-                    }),
-                    SizedBox(
-                      height: 6,
-                    ),
-                  ],
-                ))),
+      child: SingleChildScrollView(
+              child: Card(
+          margin: EdgeInsets.all(5),
+          child: SingleChildScrollView(
+              padding: EdgeInsets.all(10),
+              child: Form(
+                  key: _formKey,
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      TextFormField(
+                        key: Key('email'),
+                        keyboardType: TextInputType.emailAddress,
+                        decoration: InputDecoration(labelText: 'Enter User\'s Email address'),
+                        onChanged: (value) {
+                          _userEmail = value;
+                        },
+                      ),
+                      SizedBox(
+                        height: 15,
+                      ),
+                      RaisedButton(
+                          child: Text('Create',
+                              style: TextStyle(color: Colors.white)),
+                          onPressed: ()async {
+                          if(userEmails.contains(_userEmail)){
+                            print('true');
+                            int ind=userEmails.indexOf(_userEmail);
+                            int ownerInd=usernames.indexOf(username);
+                            final user = await FirebaseAuth.instance.currentUser();
+                            print(_userEmail+' '+userEmails[ind]);
+                            Firestore.instance.collection('chats').add({
+                              'ownUser' : userEmails[ownerInd],
+                              'otherUser': _userEmail,
+                              'chatNameOwner':  username,
+                              'chatNameOther': usernames[ind],
+                            });
+                            print(ind);
+                            _showSuccessDialog();
+                          }
+                          else{
+                            print('false');
+                            _showFailureDialog();
+                          }
+                      }),
+                      SizedBox(
+                        height: 6,
+                      ),
+                    ],
+                  ))),
+        ),
       ),
     ),
+    bottomNavigationBar: Container(
+          padding: EdgeInsets.all(3),
+          color: Colors.black87,
+          child: Text('\u00A9 Created by TanLabs',
+              style: TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white),
+              textAlign: TextAlign.center)),
     );
   }
 }

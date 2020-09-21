@@ -7,7 +7,7 @@ import './screens/auth_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:splashscreen/splashscreen.dart';
 
-void main(){
+void main(){ 
   runApp(new MaterialApp(
     home: new MyApp(),
     debugShowCheckedModeBanner: false,
@@ -23,18 +23,35 @@ class MyApp extends StatefulWidget {
 class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: new SplashScreen(
-        seconds: 4,
-        navigateAfterSeconds: new HomeScreen(),
-        image: new Image.asset('images/ChatMate_splash_screen.png'),
-        gradientBackground: new LinearGradient(colors: [Colors.green[200], Colors.green], begin: Alignment.topLeft, end: Alignment.bottomRight),
-        backgroundColor: Colors.white,
-        styleTextUnderTheLoader: new TextStyle(),
-        photoSize: MediaQuery.of(context).size.width*0.4,
-        //onClick: ()=>print("Flutter Egypt"),
-        loaderColor: Colors.black,
+    return MaterialApp(
+        title: 'chatMate',
+        theme: ThemeData(
+          primaryColor: Colors.green,
+          primarySwatch: Colors.green,
+          backgroundColor: Colors.green,
+          accentColor: Colors.blue,
+          accentColorBrightness: Brightness.dark,
+          buttonTheme: ButtonTheme.of(context).copyWith(
+              buttonColor: Colors.black87,
+              shape: RoundedRectangleBorder(
+                  side: BorderSide(color: Colors.green),
+                  borderRadius: BorderRadius.circular(15))),
+          visualDensity: VisualDensity.adaptivePlatformDensity,
+        ),
+        home: Center(
+        child: new SplashScreen(
+          seconds: 4,
+          navigateAfterSeconds: new HomeScreen(),
+          image: new Image.asset('images/ChatMate_splash_screen.png'),
+          gradientBackground: new LinearGradient(colors: [Colors.green[200], Colors.green], begin: Alignment.topLeft, end: Alignment.bottomRight),
+          backgroundColor: Colors.white,
+          styleTextUnderTheLoader: new TextStyle(),
+          photoSize: MediaQuery.of(context).size.width*0.4,
+          //onClick: ()=>print("Flutter Egypt"),
+          loaderColor: Colors.black,
+        ),
       ),
+      debugShowCheckedModeBanner: false,
     );
   }
 }
