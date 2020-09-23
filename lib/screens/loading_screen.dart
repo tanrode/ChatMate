@@ -11,6 +11,7 @@ class LoadingScreen extends StatefulWidget {
 
 class _LoadingScreenState extends State<LoadingScreen> {
   String username;
+  String imageUrl;
   void initState() {
     /*Firestore.instance.collection('users').getDocuments().then((querySnapshot) {
       querySnapshot.documents.forEach((result) {
@@ -31,14 +32,16 @@ class _LoadingScreenState extends State<LoadingScreen> {
               .getDocuments()
               .then((querySnapshot) {
             querySnapshot.documents.forEach((result) {
-              if (result.documentID == widget.userId)
+              if (result.documentID == widget.userId){
                 username = result.data['username'];
+                imageUrl = result.data['picUrl'];
+              }
             });
           }),
           builder: (ctx, snapshot) {
             if(snapshot.connectionState == ConnectionState.waiting)
               return Center(child: CircularProgressIndicator());
-            return ChatHomeScreen(widget.userId, username);
+            return ChatHomeScreen(widget.userId, username,imageUrl);
           }),
     );
   }

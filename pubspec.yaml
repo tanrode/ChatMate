@@ -31,10 +31,14 @@ dependencies:
   cloud_firestore: ^0.13.5
   firebase_auth: ^0.16.1
   splashscreen: ^1.2.0
+  image_picker: ^0.6.7+10
+  firebase_storage: ^3.1.5
+  firebase_messaging: ^6.0.13
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
+  flutter_launcher_icons: ^0.8.0
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

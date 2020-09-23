@@ -16,7 +16,9 @@ class _AddNewChatState extends State<AddNewChat> {
   bool validEmail=false;
   List<String> userEmails=[];
   List<String> usernames=[];
+  List<String> imageUrl=[];
   String username;
+  final control=TextEditingController();
   void initState()
   {
     Firestore.instance.collection('users').getDocuments().then((querySnapshot) {
@@ -26,6 +28,7 @@ class _AddNewChatState extends State<AddNewChat> {
                             username=result.data['username'];
                           userEmails.add(result.data['email']);
                           usernames.add(result.data['username']);
+                          imageUrl.add(result.data['picUrl']);
                         });
     });
     super.initState();
@@ -57,7 +60,9 @@ class _AddNewChatState extends State<AddNewChat> {
                   child: Text('Done'),
                   onPressed: () {
                     Navigator.of(context).pop();
-                    Navigator.of(context).pop();
+                    control.clear();
+                    FocusScope.of(context).unfocus();
+                    //Navigator.of(context).pop();
                   }),
             ],
           );
@@ -88,7 +93,9 @@ class _AddNewChatState extends State<AddNewChat> {
                   child: Text('Close'),
                   onPressed: () {
                     Navigator.of(context).pop();
-                    Navigator.of(context).pop();
+                    control.clear();
+                    FocusScope.of(context).unfocus();
+                    //Navigator.of(context).pop();
                   }),
             ],
           );
@@ -119,6 +126,7 @@ class _AddNewChatState extends State<AddNewChat> {
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       TextFormField(
+                        controller: control,
                         key: Key('email'),
                         keyboardType: TextInputType.emailAddress,
                         decoration: InputDecoration(labelText: 'Enter User\'s Email address'),
@@ -144,6 +152,8 @@ class _AddNewChatState extends State<AddNewChat> {
                               'otherUser': _userEmail,
                               'chatNameOwner':  username,
                               'chatNameOther': usernames[ind],
+                              'ownerPicUrl': imageUrl[ownerInd],
+                              'otherPicUrl': imageUrl[ind],
                             });
                             print(ind);
                             _showSuccessDialog();

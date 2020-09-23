@@ -1,5 +1,6 @@
 import 'package:chatMate/widgets/message.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
@@ -18,6 +19,24 @@ class _ChatScreenState extends State<ChatScreen> {
   String msg = '';
   final control = TextEditingController();
 
+  void initState()
+  {
+    final fbm = FirebaseMessaging();
+    fbm.configure(onMessage: (msg){
+      print(msg);
+      return;
+    },
+    onLaunch: (msg) {
+      print(msg);
+      return;
+    },
+    onResume: (msg) {
+      print(msg);
+      return;
+    },
+    );
+    super.initState();
+  }
   @override
   Widget build(BuildContext context) {
     Future<void> _showMyDialog() async {
