@@ -1,11 +1,14 @@
 import 'package:chatMate/widgets/message.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:image_picker/image_picker.dart';
+import 'dart:io';
 
 class ChatScreen extends StatefulWidget {
-  ChatScreen(this.docId,this.chatOtherPerson,this.chatOwner,this.currUser);
+  ChatScreen(this.docId, this.chatOtherPerson, this.chatOwner, this.currUser);
   final String docId;
   final String chatOtherPerson;
   final String chatOwner;
@@ -18,66 +21,115 @@ class ChatScreen extends StatefulWidget {
 class _ChatScreenState extends State<ChatScreen> {
   String msg = '';
   final control = TextEditingController();
+  File _image;
 
-  void initState()
-  {
+  void initState() {
     final fbm = FirebaseMessaging();
-    fbm.configure(onMessage: (msg){
-      print(msg);
-      return;
-    },
-    onLaunch: (msg) {
-      print(msg);
-      return;
-    },
-    onResume: (msg) {
-      print(msg);
-      return;
-    },
+    fbm.configure(
+      onMessage: (msg) {
+        print(msg);
+        return;
+      },
+      onLaunch: (msg) {
+        print(msg);
+        return;
+      },
+      onResume: (msg) {
+        print(msg);
+        return;
+      },
     );
     super.initState();
   }
+
+  void _pickImageCamera(String userId) async {
+    final picker = ImagePicker();
+    final pickedImage =
+        await picker.getImage(source: ImageSource.camera, imageQuality: 100);
+    final pickedImageFile = File(pickedImage.path);
+    setState(() {
+      _image = pickedImageFile;
+    });
+    final timeSent = Timestamp.now().toString();
+    final ref = FirebaseStorage.instance
+        .ref()
+        .child('chat_pics')
+        .child(userId + timeSent + '.jpg');
+    await ref.putFile(_image).onComplete;
+    final url = await ref.getDownloadURL();
+    await Firestore.instance.collection('/chats/${widget.docId}/messages').add({
+      'text': url,
+      'timeStamp': Timestamp.now(),
+      'userId': userId,
+      'isPic': 'yes',
+    });
+  }
+
+  void _pickImageDevice(String userId) async {
+    final picker = ImagePicker();
+    final pickedImage =
+        await picker.getImage(source: ImageSource.gallery, imageQuality: 100);
+    final pickedImageFile = File(pickedImage.path);
+    setState(() {
+      _image = pickedImageFile;
+    });
+    final timeSent = Timestamp.now().toString();
+    final ref = FirebaseStorage.instance
+        .ref()
+        .child('chat_pics')
+        .child(userId + timeSent + '.jpg');
+    await ref.putFile(_image).onComplete;
+    final url = await ref.getDownloadURL();
+    await Firestore.instance.collection('/chats/${widget.docId}/messages').add({
+      'text': url,
+      'timeStamp': Timestamp.now(),
+      'userId': userId,
+      'isPic': 'yes',
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
-    Future<void> _showMyDialog() async {
-      return showDialog<void>(
-        context: context,
-        barrierDismissible: false, // user must tap button!
-        builder: (BuildContext context) {
-          return AlertDialog(
-            title: Text('Confirmation'),
-            content: SingleChildScrollView(
-              child: ListBody(
-                children: <Widget>[
-                  Text('Do you want to Logout from the app?'),
+    
+    Future<dynamic> _showImageOptions(String userId) {
+      return showModalBottomSheet(
+          context: context,
+          builder: (context) {
+            return Container(
+              decoration: BoxDecoration(
+                  border: Border.all(color: Colors.green, width: 4)),
+              height: 120,
+              child: Column(
+                children: [
+                  FlatButton.icon(
+                      onPressed: () {
+                        _pickImageCamera(userId);
+                        Navigator.of(context).pop();
+                        FocusScope.of(context).unfocus();
+                      },
+                      icon: Icon(Icons.camera_alt),
+                      label: Text('Click a picture')),
+                  FlatButton.icon(
+                      onPressed: () {
+                        _pickImageDevice(userId);
+                        Navigator.of(context).pop();
+                        FocusScope.of(context).unfocus();
+                      },
+                      icon: Icon(Icons.image),
+                      label: Text('Upload from device'))
                 ],
               ),
-            ),
-            actions: <Widget>[
-              RaisedButton(
-                  child: Text('Yes'),
-                  onPressed: () {
-                    FirebaseAuth.instance.signOut();
-                    Navigator.of(context).pop();
-                  }),
-              RaisedButton(
-                child: Text('No'),
-                onPressed: () {
-                  Navigator.of(context).pop();
-                  FocusScope.of(context).unfocus();
-                },
-              ),
-            ],
-          );
-        },
-      );
+            );
+          });
     }
 
     return Scaffold(
       backgroundColor: Colors.green[100],
       appBar: AppBar(
         title: Text(
-          widget.currUser==widget.chatOwner ? widget.chatOtherPerson : widget.chatOwner,
+          widget.currUser == widget.chatOwner
+              ? widget.chatOtherPerson
+              : widget.chatOwner,
           style: TextStyle(
               color: Colors.green, fontSize: 28, fontWeight: FontWeight.w800),
         ),
@@ -120,7 +172,8 @@ class _ChatScreenState extends State<ChatScreen> {
                                           documents[ind]['text'],
                                           documents[ind]['userId'] ==
                                               futureSnaphot.data.uid,
-                                          documents[ind]['timeStamp']),
+                                          documents[ind]['timeStamp'],
+                                          documents[ind]['isPic']),
                                     );
                                   });
                             });
@@ -162,12 +215,18 @@ class _ChatScreenState extends State<ChatScreen> {
                           'text': msg,
                           'timeStamp': Timestamp.now(),
                           'userId': user.uid,
+                          'isPic': 'no',
                         });
                         //print(user.uid);
                         control.clear();
                       }
                     }),
-                IconButton(icon: Icon(Icons.camera_alt), onPressed: null)
+                IconButton(
+                    icon: Icon(Icons.camera_alt,color: Colors.blue,),
+                    onPressed: () async {
+                      final user = await FirebaseAuth.instance.currentUser();
+                      _showImageOptions(user.uid);
+                    }),
               ],
             ),
           ),
