@@ -24,6 +24,7 @@ class _AuthScreenState extends State<AuthScreen> {
       if(isLogin==true)
       {
         result = await _fbUser.signInWithEmailAndPassword(email: email, password: password);
+        //await _fbUser.sendPasswordResetEmail(email: email);
       }
       else
       {
@@ -60,7 +61,7 @@ class _AuthScreenState extends State<AuthScreen> {
     return Scaffold( 
       appBar: AppBar(title: Text('ChatMate',style: TextStyle(fontSize: 25,fontWeight: FontWeight.bold,color: Colors.white),),centerTitle: true,backgroundColor: Colors.black87,),
       backgroundColor: Colors.green,
-      body: AuthForm(submittedDetails,_isLoading),
+      body: AuthForm(submittedDetails,_isLoading,_fbUser),
       bottomNavigationBar: Container(padding: EdgeInsets.all(3),color: Colors.black87,child: Text('\u00A9 Created by TanLabs',style: TextStyle(fontSize: 14,fontWeight: FontWeight.bold,color: Colors.white),textAlign: TextAlign.center)),
     );
   }

@@ -1,13 +1,16 @@
 //The login/Signup form 
 import 'dart:io';
+import 'package:chatMate/screens/change_password.dart';
 import 'package:chatMate/screens/chat_screen.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
 class AuthForm extends StatefulWidget {
-  AuthForm(this.submitFn,this.isLoading);
+  AuthForm(this.submitFn,this.isLoading,this._fbUser);
   final void Function(String email,String username,String password,bool isLogin,BuildContext ctx,File image) submitFn;
   final bool isLoading;
+  final FirebaseAuth _fbUser;
   @override
   _AuthFormState createState() => _AuthFormState();
 }
@@ -33,12 +36,13 @@ class _AuthFormState extends State<AuthForm> {
   void _pickImageDevice()async
   {
     final picker = ImagePicker();
-    final pickedImage = await picker.getImage(source: ImageSource.gallery);
+    final pickedImage = await picker.getImage(source: ImageSource.gallery,imageQuality: 20);
     final pickedImageFile = File(pickedImage.path);
     setState(() {
       _image = pickedImageFile;
     });
   }
+
   @override
   Widget build(BuildContext context) {
     Future<dynamic> _showImageOptions()
@@ -71,7 +75,7 @@ class _AuthFormState extends State<AuthForm> {
             child: Form(
                 key: _formKey,
                 child: Column(
-                  mainAxisSize: MainAxisSize.min,
+                  //mainAxisSize: MainAxisSize.min,
                   children: [
                     if(!isLogin)
                       CircleAvatar(child: _image==null ? Icon(Icons.person,color: Colors.black,size: 60,):null , radius: 40,backgroundColor: Colors.grey,backgroundImage: _image==null ? null : FileImage(_image),),
@@ -171,6 +175,14 @@ class _AuthFormState extends State<AuthForm> {
                           child: Text(isLogin
                               ? 'New Member? Sign Up'
                               : 'Already have an account? Login')),
+                    if(!widget.isLoading && isLogin)
+                      FlatButton(
+                          onPressed: () {
+                            Navigator.of(context).push(new MaterialPageRoute(builder: (ctx){
+                              return ChangePassword(widget._fbUser,ctx);
+                            }));
+                          },
+                          child: Text('Forgot Password?')),
                   ],
                 ))),
       ),
